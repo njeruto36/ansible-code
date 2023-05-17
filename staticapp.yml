@@ -15,19 +15,21 @@
             - wget
     - name: Getting app content
       get_url:
-         url: wget https://github.com/utrains/static-resume/archive/refs/heads/main.zip
-         dest: /tmp
+         url:  https://github.com/utrains/static-resume/archive/refs/heads/main.zip
+         dest: /etc/main.zip
 
     - name: unarchiving content
       unarchive:
-        src: https://github.com/utrains/static-resume/archive/refs/heads/main.zip
-        dest: /tmp
+        src: /etc/main.zip
+        dest: /usr/local/bin
         remote_src: yes
+
     - name: copy file to html
       copy:
-         src: /tmp/static-resume-main/iportfolio/*
+         src: /usr/local/bin/static-resume-main/iPortfolio/
          dest: /var/www/html
-
+         remote_src: yes
+         follow: yes  
     - name: starting apache
       service:
         name: httpd
