@@ -1,0 +1,39 @@
+---
+- name: Static App Deployment
+  hosts: qaserver
+  become: yes
+  ignore_errors: True
+  tasks:
+    - name: installing packages
+      yum:
+       name: "{{item}}"
+       state: present
+      loop:
+          
+            - httpd
+            - unzip
+            - wget
+    - name: Getting app content
+      get_url:
+         url:  https://github.com/utrains/static-resume/archive/refs/heads/main.zip
+         dest: /etc/main.zip
+
+    - name: unarchiving content
+      unarchive:
+        src: /etc/main.zip
+        dest: /usr/local/bin
+        remote_src: yes
+
+    - name: copy file to html
+      copy:
+         src: /usr/local/bin/static-resume-main/iPortfolio/
+         dest: /var/www/html
+         remote_src: yes
+         follow: yes  
+    - name: starting apache
+      service:
+        name: httpd
+        state: started 
+        enabled: yes 
+
+      when: ansible_os_family == "RedHat"
